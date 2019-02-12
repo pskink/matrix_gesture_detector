@@ -24,6 +24,6 @@ The usage is as follows:
   )
 ```
 here: `SomeWidgetThatUsesMatrix` could be a `Transform` widget
-([transform_demo.dart](/example/lib/transform_demo.dart)) or a `CustomPaint` widget which
+([transform_demo.dart](https://github.com/pskink/matrix_gesture_detector/blob/master/example/lib/transform_demo.dart)) or a `CustomPaint` widget which
 `CustomPainter` uses `Matrix4` in its low level drawing code
-([custom_painter_demo.dart](/example/lib/custom_painter_demo.dart)).
+([custom_painter_demo.dart](https://github.com/pskink/matrix_gesture_detector/blob/master/example/lib/custom_painter_demo.dart)).
