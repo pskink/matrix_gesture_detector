@@ -25,7 +25,7 @@ class _CustomPainterDemoState extends State<CustomPainterDemo> {
         title: Text('CustomPainter Demo'),
       ),
       body: MatrixGestureDetector(
-        onMatrixUpdate: (m) => notifier.value = m,
+        onMatrixUpdate: (m, tm, sm, rm) => notifier.value = m,
         child: CustomPaint(
           foregroundPainter: TestCustomPainter(context, notifier),
           child: Container(

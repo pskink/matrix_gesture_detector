@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 
 import 'custom_painter_demo.dart';
 import 'transform_demo.dart';
+import 'transform_demo2.dart';
 
 void main() => runApp(MaterialApp(
       title: 'MatrixGestureDetector Demo',
       routes: {
         'customPainterDemo': (ctx) => CustomPainterDemo(),
         'transformDemo': (ctx) => TransformDemo(),
+        'transformDemo2': (ctx) => TransformDemo2(),
       },
       home: Scaffold(
         appBar: AppBar(
@@ -33,6 +35,15 @@ void main() => runApp(MaterialApp(
                       leading: Icon(Icons.image),
                       title: Text(
                         'Transform Demo',
+                      ),
+                      subtitle: Text(
+                          'this demo shows how to use a matrix with a standard Transform widget'),
+                    ),
+                    ListTile(
+                      onTap: () => showDemo(context, 'transformDemo2'),
+                      leading: Icon(Icons.image),
+                      title: Text(
+                        'Transform Demo 2',
                       ),
                       subtitle: Text(
                           'this demo shows how to use a matrix with a standard Transform widget'),

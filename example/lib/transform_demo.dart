@@ -2,24 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:matrix_gesture_detector/matrix_gesture_detector.dart';
 
 class TransformDemo extends StatelessWidget {
-  final Matrix4 matrix = Matrix4.identity();
   @override
   Widget build(BuildContext context) {
+    final ValueNotifier<Matrix4> notifier = ValueNotifier(Matrix4.identity());
     return Scaffold(
       backgroundColor: Colors.grey,
       appBar: AppBar(
         title: Text('Transform Demo'),
       ),
-      body: StatefulBuilder(
-        builder: (BuildContext context, setState) {
-          return MatrixGestureDetector(
-            onMatrixUpdate: (Matrix4 m) {
-              setState(() {
-                m.copyInto(matrix);
-              });
-            },
-            child: Transform(
-              transform: matrix,
+      body: MatrixGestureDetector(
+        onMatrixUpdate: (m, tm, sm, rm) {
+          notifier.value = m;
+        },
+        child: AnimatedBuilder(
+          animation: notifier,
+          builder: (ctx, child) {
+            return Transform(
+              transform: notifier.value,
               child: Stack(
                 children: <Widget>[
                   Container(
@@ -27,7 +26,7 @@ class TransformDemo extends StatelessWidget {
                   ),
                   Positioned.fill(
                     child: Container(
-                      transform: matrix,
+                      transform: notifier.value,
                       child: FittedBox(
                         fit: BoxFit.contain,
                         child: Icon(
@@ -49,9 +48,9 @@ class TransformDemo extends StatelessWidget {
                   ),
                 ],
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

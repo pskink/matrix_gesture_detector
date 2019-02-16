@@ -12,7 +12,7 @@ The usage is as follows:
 
 ```dart
   MatrixGestureDetector(
-    onMatrixUpdate: (Matrix4 m) {
+    onMatrixUpdate: (Matrix4 m, Matrix4 tm, Matrix4 sm, Matrix4 rm) {
       setState(() {
         matrix = m;
       });
