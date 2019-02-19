@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'blur_demo.dart';
 import 'custom_painter_demo.dart';
 import 'transform_demo.dart';
 import 'transform_demo2.dart';
@@ -17,6 +18,10 @@ List<Demo> demos = [
       'Transform Demo 2',
       'this demo shows how to use a matrix with a standard Transform widget',
       TransformDemo2()),
+  Demo(
+      'Blur Demo',
+      'this demo shows how to use a matrix with drawing custom shapes',
+      BlurDemo()),
 ];
 
 void main() => runApp(MaterialApp(
