@@ -4,6 +4,7 @@ import 'blur_demo.dart';
 import 'custom_painter_demo.dart';
 import 'transform_demo.dart';
 import 'transform_demo2.dart';
+import 'transform_demo3.dart';
 
 List<Demo> demos = [
   Demo(
@@ -18,6 +19,10 @@ List<Demo> demos = [
       'Transform Demo 2',
       'this demo shows how to use a matrix with a standard Transform widget',
       TransformDemo2()),
+  Demo(
+      'Transform Demo 3',
+      'this demo shows how to use a matrix with a standard Transform widget',
+      TransformDemo3()),
   Demo(
       'Blur Demo',
       'this demo shows how to use a matrix with drawing custom shapes',
