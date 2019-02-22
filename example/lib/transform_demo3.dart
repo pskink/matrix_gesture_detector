@@ -10,7 +10,8 @@ class TransformDemo3 extends StatefulWidget {
 
 class _TransformDemo3State extends State<TransformDemo3> {
   static const Color color0 = Color(0xff00aa00);
-  static const Color color1 = Color(0xffaa0000);
+  static const Color color1 = Color(0xffeeaa00);
+  static const Color color2 = Color(0xffaa0000);
   static const double radius0 = 0.0;
 
   Matrix4 matrix = Matrix4.identity();
@@ -30,7 +31,12 @@ class _TransformDemo3State extends State<TransformDemo3> {
           Size s = constraints.biggest;
           double side = s.shortestSide * 0.666;
           matrix.leftTranslate((s.width - side) / 2, (s.height - side) / 2);
-          Tween colorTween = ColorTween(begin: color0, end: color1);
+          TweenSequence colorTween = TweenSequence([
+            TweenSequenceItem(
+                tween: ColorTween(begin: color0, end: color1), weight: 1),
+            TweenSequenceItem(
+                tween: ColorTween(begin: color1, end: color2), weight: 1),
+          ]);
           Tween radiusTween = Tween<double>(begin: radius0, end: side / 2);
           return MatrixGestureDetector(
             onMatrixUpdate: (m, tm, sm, rm) {
