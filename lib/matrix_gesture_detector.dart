@@ -69,12 +69,14 @@ class MatrixGestureDetector extends StatefulWidget {
 
   ///
   /// Compose the matrix from translation, scale and rotation matrices - you can
-  /// pass a null to skip any matrix from composition
+  /// pass a null to skip any matrix from composition.
+  ///
+  /// If [matrix] is not null the result of the composing will be concatenated
+  /// to that [matrix], otherwise the identity matrix will be used.
   ///
   static Matrix4 compose(Matrix4 matrix, Matrix4 translationMatrix,
-      Matrix4 scaleMatrix, Matrix4 rotationMatrix,
-      {bool concat = true}) {
-    if (!concat) matrix = Matrix4.identity();
+      Matrix4 scaleMatrix, Matrix4 rotationMatrix) {
+    if (matrix == null) matrix = Matrix4.identity();
     if (translationMatrix != null) matrix = translationMatrix * matrix;
     if (scaleMatrix != null) matrix = scaleMatrix * matrix;
     if (rotationMatrix != null) matrix = rotationMatrix * matrix;
