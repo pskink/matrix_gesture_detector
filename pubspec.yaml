@@ -1,6 +1,6 @@
 name: matrix_gesture_detector
 description: A gesture detector mapping translation/rotation/scale gestures to a Matrix4 object.
-version: 0.0.5
+version: 0.0.6
 author: pskink <pskink@gmail.com>
 homepage: https://github.com/pskink/matrix_gesture_detector
 
