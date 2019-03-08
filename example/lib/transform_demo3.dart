@@ -15,7 +15,6 @@ class _TransformDemo3State extends State<TransformDemo3> {
   static const double radius0 = 0.0;
 
   Matrix4 matrix = Matrix4.identity();
-  double angle = 0.0;
   double radius = radius0;
   Color color = color0;
   ValueNotifier<int> notifier = ValueNotifier(0);
@@ -42,9 +41,7 @@ class _TransformDemo3State extends State<TransformDemo3> {
             onMatrixUpdate: (m, tm, sm, rm) {
               matrix = MatrixGestureDetector.compose(matrix, tm, sm, null);
 
-              var array = rm.applyToVector3Array([0, 0, 0, 1, 0, 0]);
-              Offset rotated = Offset(array[3] - array[0], array[4] - array[1]);
-              angle += rotated.direction;
+              var angle = MatrixGestureDetector.decomposeToValues(m).rotation;
               double t = (1 - cos(2 * angle)) / 2;
 
               radius = radiusTween.transform(t);

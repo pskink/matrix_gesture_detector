@@ -1,6 +1,6 @@
 # matrix_gesture_detector
 
-A gesture detector which detects translation, scale and rotation gestures
+`MatrixGestureDetector` detects translation, scale and rotation gestures
 and combines them into `Matrix4` object that can be used by `Transform` widget
 or by low level `CustomPainter` code. You can customize types of reported
 gestures by passing `shouldTranslate`, `shouldScale` and `shouldRotate`

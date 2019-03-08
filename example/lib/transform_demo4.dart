@@ -53,17 +53,21 @@ class TransformDemo4State extends State<TransformDemo4>
         title: Text('Transform Demo 4'),
       ),
       body: Column(
-        children: makeControls() + makeMainWidget(getLabel()),
+        children: makeControls() + makeMainWidget(getBody()),
       ),
     );
   }
 
-  String getLabel() {
-    String prefix = 'use your fingers to ';
-    if (shouldRotate && shouldScale) return prefix + 'rotate / scale';
-    if (shouldRotate) return prefix + 'rotate';
-    if (shouldScale) return prefix + 'scale';
-    return 'you have to select at least one checkbox above';
+  Body getBody() {
+    String lbl = 'use your fingers to ';
+    if (shouldRotate && shouldScale)
+      return Body(lbl + 'rotate / scale', Icons.crop_rotate, Color(0x6600aa00));
+    if (shouldRotate)
+      return Body(lbl + 'rotate', Icons.crop_rotate, Color(0x6600aa00));
+    if (shouldScale)
+      return Body(lbl + 'scale', Icons.transform, Color(0x660000aa));
+    return Body('you have to select at least one checkbox above', Icons.warning,
+        Color(0x66aa0000));
   }
 
   Animation<Alignment> makeFocalPointAnimation(Alignment begin, Alignment end) {
@@ -106,7 +110,7 @@ class TransformDemo4State extends State<TransformDemo4>
         ),
       ];
 
-  List<Widget> makeMainWidget(String label) => [
+  List<Widget> makeMainWidget(Body body) => [
         Expanded(
           child: Padding(
             padding: const EdgeInsets.all(32.0),
@@ -123,37 +127,66 @@ class TransformDemo4State extends State<TransformDemo4>
                 foregroundPainter: FocalPointPainter(focalPointAnimation),
                 child: AnimatedBuilder(
                   animation: notifier,
-                  builder: (ctx, child) {
-                    return Transform(
-                      transform: notifier.value,
-                      child: GridPaper(
-                        color: Color(0xaa0000ff),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(width: 4.0, color: Colors.blue),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(32.0)),
-                          ),
-                          child: Container(
-                            decoration: FlutterLogoDecoration(),
-                            padding: EdgeInsets.all(32),
-                            alignment: Alignment(0, -0.5),
-                            child: Text(
-                              label,
-                              style: Theme.of(context).textTheme.display2,
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
+                  builder: (ctx, child) => makeTransform(ctx, child, body),
                 ),
               ),
             ),
           ),
         )
       ];
+
+  Widget makeTransform(BuildContext context, Widget child, Body body) {
+    return Transform(
+      transform: notifier.value,
+      child: GridPaper(
+        color: Color(0xaa0000ff),
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(width: 4.0, color: Color(0xaa00cc00)),
+            borderRadius: BorderRadius.all(Radius.circular(32.0)),
+          ),
+          child: AnimatedSwitcher(
+            duration: Duration(milliseconds: 400),
+            transitionBuilder: (child, animation) => ScaleTransition(
+                  scale: animation,
+                  child: child,
+                  alignment: focalPoint,
+                ),
+            switchInCurve: Curves.ease,
+            switchOutCurve: Curves.ease,
+            child: Stack(
+              key: ValueKey('$shouldRotate-$shouldScale'),
+              fit: StackFit.expand,
+              children: <Widget>[
+                FittedBox(
+                  child: Icon(
+                    body.icon,
+                    color: body.color,
+                  ),
+                ),
+                Container(
+                  alignment: Alignment(0, -0.5),
+                  child: Text(
+                    body.label,
+                    style: Theme.of(context).textTheme.display2,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class Body {
+  String label;
+  IconData icon;
+  Color color;
+
+  Body(this.label, this.icon, this.color);
 }
 
 class FocalPointPainter extends CustomPainter {

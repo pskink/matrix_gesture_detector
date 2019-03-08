@@ -11,7 +11,7 @@ typedef MatrixGestureDetectorCallback = void Function(
     Matrix4 scaleDeltaMatrix,
     Matrix4 rotationDeltaMatrix);
 
-/// A gesture detector which detects translation, scale and rotation gestures
+/// [MatrixGestureDetector] detects translation, scale and rotation gestures
 /// and combines them into [Matrix4] object that can be used by [Transform] widget
 /// or by low level [CustomPainter] code. You can customize types of reported
 /// gestures by passing [shouldTranslate], [shouldScale] and [shouldRotate]
@@ -86,6 +86,19 @@ class MatrixGestureDetector extends StatefulWidget {
     if (scaleMatrix != null) matrix = scaleMatrix * matrix;
     if (rotationMatrix != null) matrix = rotationMatrix * matrix;
     return matrix;
+  }
+
+  ///
+  /// Decomposes [matrix] into [MatrixDecomposedValues.translation],
+  /// [MatrixDecomposedValues.scale] and [MatrixDecomposedValues.rotation] components.
+  ///
+  static MatrixDecomposedValues decomposeToValues(Matrix4 matrix) {
+    var array = matrix.applyToVector3Array([0, 0, 0, 1, 0, 0]);
+    Offset translation = Offset(array[0], array[1]);
+    Offset delta = Offset(array[3] - array[0], array[4] - array[1]);
+    double scale = delta.distance;
+    double rotation = delta.direction;
+    return MatrixDecomposedValues(translation, scale, rotation);
   }
 }
 
@@ -165,25 +178,46 @@ class _MatrixGestureDetectorState extends State<MatrixGestureDetector> {
   }
 
   Matrix4 _translate(Offset translation) {
-    return Matrix4.translationValues(translation.dx, translation.dy, 0.0);
+    var dx = translation.dx;
+    var dy = translation.dy;
+
+    //  ..[0]  = 1       # x scale
+    //  ..[5]  = 1       # y scale
+    //  ..[10] = 1       # diagonal "one"
+    //  ..[12] = dx      # x translation
+    //  ..[13] = dy      # y translation
+    //  ..[15] = 1       # diagonal "one"
+    return Matrix4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, dx, dy, 0, 1);
   }
 
   Matrix4 _scale(double scale, Offset focalPoint) {
-    Matrix4 matrix = Matrix4.diagonal3Values(scale, scale, 1);
     var dx = (1 - scale) * focalPoint.dx;
     var dy = (1 - scale) * focalPoint.dy;
-    matrix.setTranslationRaw(dx, dy, 0.0);
-    return matrix;
+
+    //  ..[0]  = scale   # x scale
+    //  ..[5]  = scale   # y scale
+    //  ..[10] = 1       # diagonal "one"
+    //  ..[12] = dx      # x translation
+    //  ..[13] = dy      # y translation
+    //  ..[15] = 1       # diagonal "one"
+    return Matrix4(scale, 0, 0, 0, 0, scale, 0, 0, 0, 0, 1, 0, dx, dy, 0, 1);
   }
 
   Matrix4 _rotate(double angle, Offset focalPoint) {
-    Matrix4 matrix = Matrix4.rotationZ(angle);
-    var cosa = cos(angle);
-    var sina = sin(angle);
-    var dx = (1 - cosa) * focalPoint.dx + sina * focalPoint.dy;
-    var dy = (1 - cosa) * focalPoint.dy - sina * focalPoint.dx;
-    matrix.setTranslationRaw(dx, dy, 0.0);
-    return matrix;
+    var c = cos(angle);
+    var s = sin(angle);
+    var dx = (1 - c) * focalPoint.dx + s * focalPoint.dy;
+    var dy = (1 - c) * focalPoint.dy - s * focalPoint.dx;
+
+    //  ..[0]  = c       # x scale
+    //  ..[1]  = s       # y skew
+    //  ..[4]  = -s      # x skew
+    //  ..[5]  = c       # y scale
+    //  ..[10] = 1       # diagonal "one"
+    //  ..[12] = dx      # x translation
+    //  ..[13] = dy      # y translation
+    //  ..[15] = 1       # diagonal "one"
+    return Matrix4(c, s, 0, 0, -s, c, 0, 0, 0, 0, 1, 0, dx, dy, 0, 1);
   }
 }
 
@@ -199,5 +233,24 @@ class _ValueUpdater<T> {
     T updated = onUpdate(value, newValue);
     value = newValue;
     return updated;
+  }
+}
+
+class MatrixDecomposedValues {
+  /// Translation, in most cases useful only for matrices that are nothing but
+  /// a translation (no scale and no rotation).
+  final Offset translation;
+
+  /// Scaling factor.
+  final double scale;
+
+  /// Rotation in radians, (-pi..pi) range.
+  final double rotation;
+
+  MatrixDecomposedValues(this.translation, this.scale, this.rotation);
+
+  @override
+  String toString() {
+    return 'MatrixDecomposedValues(translation: $translation, scale: ${scale.toStringAsFixed(3)}, rotation: ${rotation.toStringAsFixed(3)})';
   }
 }
