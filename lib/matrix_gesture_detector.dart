@@ -6,10 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:vector_math/vector_math_64.dart';
 
 typedef MatrixGestureDetectorCallback = void Function(
-    Matrix4 matrix,
-    Matrix4 translationDeltaMatrix,
-    Matrix4 scaleDeltaMatrix,
-    Matrix4 rotationDeltaMatrix);
+    Matrix4 matrix, Matrix4 translationDeltaMatrix, Matrix4 scaleDeltaMatrix, Matrix4 rotationDeltaMatrix);
 
 /// [MatrixGestureDetector] detects translation, scale and rotation gestures
 /// and combines them into [Matrix4] object that can be used by [Transform] widget
@@ -70,7 +67,7 @@ class MatrixGestureDetector extends StatefulWidget {
         super(key: key);
 
   @override
-  _MatrixGestureDetectorState createState() => _MatrixGestureDetectorState();
+  MatrixGestureDetectorState createState() => MatrixGestureDetectorState();
 
   ///
   /// Compose the matrix from translation, scale and rotation matrices - you can
@@ -79,8 +76,7 @@ class MatrixGestureDetector extends StatefulWidget {
   /// If [matrix] is not null the result of the composing will be concatenated
   /// to that [matrix], otherwise the identity matrix will be used.
   ///
-  static Matrix4 compose(Matrix4 matrix, Matrix4 translationMatrix,
-      Matrix4 scaleMatrix, Matrix4 rotationMatrix) {
+  static Matrix4 compose(Matrix4 matrix, Matrix4 translationMatrix, Matrix4 scaleMatrix, Matrix4 rotationMatrix) {
     if (matrix == null) matrix = Matrix4.identity();
     if (translationMatrix != null) matrix = translationMatrix * matrix;
     if (scaleMatrix != null) matrix = scaleMatrix * matrix;
@@ -102,7 +98,7 @@ class MatrixGestureDetector extends StatefulWidget {
   }
 }
 
-class _MatrixGestureDetectorState extends State<MatrixGestureDetector> {
+class MatrixGestureDetectorState extends State<MatrixGestureDetector> {
   Matrix4 translationDeltaMatrix = Matrix4.identity();
   Matrix4 scaleDeltaMatrix = Matrix4.identity();
   Matrix4 rotationDeltaMatrix = Matrix4.identity();
@@ -110,8 +106,7 @@ class _MatrixGestureDetectorState extends State<MatrixGestureDetector> {
 
   @override
   Widget build(BuildContext context) {
-    Widget child =
-        widget.clipChild ? ClipRect(child: widget.child) : widget.child;
+    Widget child = widget.clipChild ? ClipRect(child: widget.child) : widget.child;
     return GestureDetector(
       onScaleStart: onScaleStart,
       onScaleUpdate: onScaleUpdate,
@@ -173,8 +168,7 @@ class _MatrixGestureDetectorState extends State<MatrixGestureDetector> {
       }
     }
 
-    widget.onMatrixUpdate(
-        matrix, translationDeltaMatrix, scaleDeltaMatrix, rotationDeltaMatrix);
+    widget.onMatrixUpdate(matrix, translationDeltaMatrix, scaleDeltaMatrix, rotationDeltaMatrix);
   }
 
   Matrix4 _translate(Offset translation) {
