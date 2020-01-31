@@ -51,16 +51,17 @@ class ImageData {
   ui.Image image;
   ValueNotifier<int> notifier;
   Size size;
+  ImageStreamListener isl;
 
-  ImageData(this.assetName, this.notifier)
-      : imageProvider = AssetImage(assetName);
+  ImageData(this.assetName, this.notifier) : imageProvider = AssetImage(assetName);
 
   void resolve(BuildContext context) {
     ImageStream oldImageStream = imageStream;
     imageStream = imageProvider.resolve(createLocalImageConfiguration(context));
     if (imageStream.key != oldImageStream?.key) {
-      oldImageStream?.removeListener(imageLoaded);
-      imageStream.addListener(imageLoaded);
+      oldImageStream?.removeListener(isl);
+      isl = new ImageStreamListener(imageLoaded);
+      imageStream.addListener(isl);
     }
   }
 
@@ -96,8 +97,7 @@ class BlurPainter extends CustomPainter {
         ..style = ui.PaintingStyle.stroke
         ..strokeWidth = 4.0;
 
-      path = parseSvgPathData(
-          'M8,15 C8,15 0,10 0,5 0,0 7,1 8,4 c1,-3 8,-4 8,1 0,5 -6,6 -8,10 z');
+      path = parseSvgPathData('M8,15 C8,15 0,10 0,5 0,0 7,1 8,4 c1,-3 8,-4 8,1 0,5 -6,6 -8,10 z');
       Rect bounds = path.getBounds();
       Rect deflated = outRect.deflate(100);
       var scale = deflated.width / bounds.width;
