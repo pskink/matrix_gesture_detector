@@ -27,3 +27,7 @@ here: `SomeWidgetThatUsesMatrix` could be a `Transform` widget
 ([transform_demo.dart](https://github.com/pskink/matrix_gesture_detector/blob/master/example/lib/transform_demo.dart)) or a `CustomPaint` widget which
 `CustomPainter` uses `Matrix4` in its low level drawing code
 ([custom_painter_demo.dart](https://github.com/pskink/matrix_gesture_detector/blob/master/example/lib/custom_painter_demo.dart)).
+
+## Examples
+
+![bounded demo gif](https://i.imgur.com/TEHJVYC.gif) ![grid rotation demo gif](https://i.imgur.com/H3BbzuB.gif) ![blur demo gif](https://i.imgur.com/8JAwcEV.gif)
