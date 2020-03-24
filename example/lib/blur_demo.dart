@@ -59,8 +59,8 @@ class ImageData {
     ImageStream oldImageStream = imageStream;
     imageStream = imageProvider.resolve(createLocalImageConfiguration(context));
     if (imageStream.key != oldImageStream?.key) {
-      oldImageStream?.removeListener(imageLoaded);
-      imageStream.addListener(imageLoaded);
+      oldImageStream?.removeListener(ImageStreamListener(imageLoaded));
+      imageStream.addListener(ImageStreamListener(imageLoaded));
     }
   }
 
