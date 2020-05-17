@@ -21,6 +21,10 @@ class MatrixGestureDetector extends StatefulWidget {
   /// [Matrix4] change notification callback
   ///
   final MatrixGestureDetectorCallback onMatrixUpdate;
+  ///  
+  /// Callback to notify the update ended.
+  ///   
+  final Function onMatrixUpdateEnd;
 
   /// The [child] contained by this detector.
   ///
@@ -65,6 +69,7 @@ class MatrixGestureDetector extends StatefulWidget {
     this.shouldRotate = true,
     this.clipChild = true,
     this.focalPointAlignment,
+    this.onMatrixUpdateEnd
   })  : assert(onMatrixUpdate != null),
         assert(child != null),
         super(key: key);
@@ -111,10 +116,11 @@ class _MatrixGestureDetectorState extends State<MatrixGestureDetector> {
   @override
   Widget build(BuildContext context) {
     Widget child =
-        widget.clipChild ? ClipRect(child: widget.child) : widget.child;
+    widget.clipChild ? ClipRect(child: widget.child) : widget.child;
     return GestureDetector(
       onScaleStart: onScaleStart,
       onScaleUpdate: onScaleUpdate,
+      onScaleEnd: onScaleEnd,
       child: child,
     );
   }
@@ -133,6 +139,11 @@ class _MatrixGestureDetectorState extends State<MatrixGestureDetector> {
     translationUpdater.value = details.focalPoint;
     rotationUpdater.value = double.nan;
     scaleUpdater.value = 1.0;
+  }
+
+  void onScaleEnd(ScaleEndDetails details){
+    if(widget.onMatrixUpdateEnd!= null)
+    widget.onMatrixUpdateEnd(details);
   }
 
   void onScaleUpdate(ScaleUpdateDetails details) {
