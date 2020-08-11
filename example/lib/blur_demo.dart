@@ -51,7 +51,6 @@ class ImageData {
   ui.Image image;
   ValueNotifier<int> notifier;
   Size size;
-  ImageStreamListener isl;
 
   ImageData(this.assetName, this.notifier) : imageProvider = AssetImage(assetName);
 
@@ -59,9 +58,8 @@ class ImageData {
     ImageStream oldImageStream = imageStream;
     imageStream = imageProvider.resolve(createLocalImageConfiguration(context));
     if (imageStream.key != oldImageStream?.key) {
-      oldImageStream?.removeListener(isl);
-      isl = new ImageStreamListener(imageLoaded);
-      imageStream.addListener(isl);
+      oldImageStream?.removeListener(ImageStreamListener(imageLoaded));
+      imageStream.addListener(ImageStreamListener(imageLoaded));
     }
   }
 
