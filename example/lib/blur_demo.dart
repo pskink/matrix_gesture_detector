@@ -13,9 +13,9 @@ class BlurDemo extends StatefulWidget {
 
 class _BlurDemoState extends State<BlurDemo> {
   ValueNotifier<int> imageLoaded = ValueNotifier(0);
-  ValueNotifier<Matrix4> notifier;
-  ImageData sharp;
-  ImageData blur;
+  ValueNotifier<Matrix4>? notifier;
+  ImageData? sharp;
+  ImageData? blur;
 
   @override
   void initState() {
@@ -29,14 +29,14 @@ class _BlurDemoState extends State<BlurDemo> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    sharp.resolve(context);
-    blur.resolve(context);
+    sharp!.resolve(context);
+    blur!.resolve(context);
   }
 
   @override
   Widget build(BuildContext context) {
     return MatrixGestureDetector(
-      onMatrixUpdate: (m, tm, sm, rm) => notifier.value = m,
+      onMatrixUpdate: (m, tm, sm, rm) => notifier!.value = m,
       child: CustomPaint(
         painter: BlurPainter(notifier, sharp, blur),
       ),
@@ -46,50 +46,50 @@ class _BlurDemoState extends State<BlurDemo> {
 
 class ImageData {
   String assetName;
-  ImageStream imageStream;
+  ImageStream? imageStream;
   ImageProvider imageProvider;
-  ui.Image image;
+  ui.Image? image;
   ValueNotifier<int> notifier;
-  Size size;
+  late Size size;
 
   ImageData(this.assetName, this.notifier)
       : imageProvider = AssetImage(assetName);
 
   void resolve(BuildContext context) {
-    ImageStream oldImageStream = imageStream;
+    ImageStream? oldImageStream = imageStream;
     imageStream = imageProvider.resolve(createLocalImageConfiguration(context));
-    if (imageStream.key != oldImageStream?.key) {
+    if (imageStream!.key != oldImageStream?.key) {
       oldImageStream?.removeListener(ImageStreamListener(imageLoaded));
-      imageStream.addListener(ImageStreamListener(imageLoaded));
+      imageStream!.addListener(ImageStreamListener(imageLoaded));
     }
   }
 
   void imageLoaded(ImageInfo imageInfo, bool synchronousCall) {
     print('image [$assetName] loaded: $imageInfo');
     image = imageInfo.image;
-    size = Size(image.width.toDouble(), image.height.toDouble());
+    size = Size(image!.width.toDouble(), image!.height.toDouble());
     notifier.value++;
   }
 }
 
 class BlurPainter extends CustomPainter {
-  ValueNotifier<Matrix4> notifier;
-  ImageData sharp;
-  ImageData blur;
-  Path path;
+  ValueNotifier<Matrix4>? notifier;
+  ImageData? sharp;
+  ImageData? blur;
+  Path? path;
   Paint borderPaint = Paint();
   Paint imagePaint = Paint();
   Paint blurredPaint = Paint();
-  Rect outRect;
+  late Rect outRect;
 
   BlurPainter(this.notifier, this.sharp, this.blur) : super(repaint: notifier);
 
   @override
   void paint(ui.Canvas canvas, ui.Size size) {
-    if (sharp.image == null || blur.image == null) return;
+    if (sharp!.image == null || blur!.image == null) return;
 
     if (path == null) {
-      FittedSizes fs = applyBoxFit(BoxFit.contain, sharp.size, size);
+      FittedSizes fs = applyBoxFit(BoxFit.contain, sharp!.size, size);
       outRect = Alignment.center.inscribe(fs.destination, Offset.zero & size);
       borderPaint
         ..color = Colors.green
@@ -98,23 +98,23 @@ class BlurPainter extends CustomPainter {
 
       path = parseSvgPathData(
           'M8,15 C8,15 0,10 0,5 0,0 7,1 8,4 c1,-3 8,-4 8,1 0,5 -6,6 -8,10 z');
-      Rect bounds = path.getBounds();
+      Rect bounds = path!.getBounds();
       Rect deflated = outRect.deflate(100);
       var scale = deflated.width / bounds.width;
       Matrix4 matrix = Matrix4.diagonal3Values(scale, scale, 1.0);
-      path = path.transform(matrix.storage).shift(deflated.topLeft);
+      path = path!.transform(matrix.storage).shift(deflated.topLeft);
 
-      scale = outRect.width / sharp.size.width;
+      scale = outRect.width / sharp!.size.width;
       matrix = Matrix4.diagonal3Values(scale, scale, 1.0);
       matrix.leftTranslate(outRect.left, outRect.top);
-      imagePaint.shader = createShader(sharp.image, matrix.storage);
+      imagePaint.shader = createShader(sharp!.image!, matrix.storage);
       blurredPaint
-        ..shader = createShader(blur.image, matrix.storage)
+        ..shader = createShader(blur!.image!, matrix.storage)
         ..maskFilter = MaskFilter.blur(BlurStyle.normal, 32)
         ..colorFilter = ColorFilter.mode(Colors.black38, BlendMode.srcOver);
     }
 
-    Path transformedPath = path.transform(notifier.value.storage);
+    Path transformedPath = path!.transform(notifier!.value.storage);
     canvas
       ..clipRect(outRect.inflate(32))
       ..drawRect(outRect, blurredPaint)
