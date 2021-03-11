@@ -39,7 +39,7 @@ class _TransformDemo3State extends State<TransformDemo3> {
           Tween radiusTween = Tween<double>(begin: radius0, end: side / 2);
           return MatrixGestureDetector(
             onMatrixUpdate: (m, tm, sm, rm) {
-              matrix = MatrixGestureDetector.compose(matrix, tm, sm, null!);
+              matrix = MatrixGestureDetector.compose(matrix, tm, sm, null);
 
               var angle = MatrixGestureDetector.decomposeToValues(m).rotation;
               double t = (1 - cos(2 * angle)) / 2;
