@@ -8,9 +8,9 @@ class TransformDemo2 extends StatefulWidget {
 }
 
 class _TransformDemo2State extends State<TransformDemo2> {
-  Matrix4 matrix;
-  ValueNotifier<Matrix4> notifier;
-  Boxer boxer;
+  Matrix4? matrix;
+  late ValueNotifier<Matrix4?> notifier;
+  late Boxer boxer;
 
   @override
   void initState() {
@@ -31,14 +31,14 @@ class _TransformDemo2State extends State<TransformDemo2> {
           var height = constraints.biggest.height / 2.0;
           var dx = (constraints.biggest.width - width) / 2;
           var dy = (constraints.biggest.height - height) / 2;
-          matrix.leftTranslate(dx, dy);
+          matrix!.leftTranslate(dx, dy);
           boxer = Boxer(Offset.zero & constraints.biggest,
               Rect.fromLTWH(0, 0, width, height));
           return MatrixGestureDetector(
             shouldRotate: false,
             onMatrixUpdate: (m, tm, sm, rm) {
-              matrix = MatrixGestureDetector.compose(matrix, tm, sm, null);
-              boxer.clamp(matrix);
+              matrix = MatrixGestureDetector.compose(matrix!, tm, sm, null);
+              boxer.clamp(matrix!);
               notifier.value = matrix;
             },
             child: Container(
@@ -49,7 +49,7 @@ class _TransformDemo2State extends State<TransformDemo2> {
               child: AnimatedBuilder(
                 builder: (ctx, child) {
                   return Transform(
-                    transform: matrix,
+                    transform: matrix!,
                     child: Container(
                       width: width,
                       height: height,
@@ -83,7 +83,7 @@ class _TransformDemo2State extends State<TransformDemo2> {
 class Boxer {
   final Rect bounds;
   final Rect src;
-  Rect dst;
+  late Rect dst;
 
   Boxer(this.bounds, this.src);
 

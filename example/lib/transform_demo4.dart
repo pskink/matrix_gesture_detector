@@ -9,13 +9,13 @@ class TransformDemo4 extends StatefulWidget {
 class TransformDemo4State extends State<TransformDemo4>
     with TickerProviderStateMixin {
   ValueNotifier<Matrix4> notifier = ValueNotifier(Matrix4.identity());
-  bool shouldScale = true;
-  bool shouldRotate = true;
-  AnimationController controller;
+  bool? shouldScale = true;
+  bool? shouldRotate = true;
+  late AnimationController controller;
 
-  Alignment focalPoint = Alignment.center;
+  Alignment? focalPoint = Alignment.center;
 
-  Animation<Alignment> focalPointAnimation;
+  Animation<Alignment>? focalPointAnimation;
   List items = [
     Alignment.topLeft,
     Alignment.topCenter,
@@ -60,17 +60,17 @@ class TransformDemo4State extends State<TransformDemo4>
 
   Body getBody() {
     String lbl = 'use your fingers to ';
-    if (shouldRotate && shouldScale)
+    if (shouldRotate! && shouldScale!)
       return Body(lbl + 'rotate / scale', Icons.crop_rotate, Color(0x6600aa00));
-    if (shouldRotate)
+    if (shouldRotate!)
       return Body(lbl + 'rotate', Icons.crop_rotate, Color(0x6600aa00));
-    if (shouldScale)
+    if (shouldScale!)
       return Body(lbl + 'scale', Icons.transform, Color(0x660000aa));
     return Body('you have to select at least one checkbox above', Icons.warning,
         Color(0x66aa0000));
   }
 
-  Animation<Alignment> makeFocalPointAnimation(Alignment begin, Alignment end) {
+  Animation<Alignment> makeFocalPointAnimation(Alignment? begin, Alignment? end) {
     return controller.drive(AlignmentTween(begin: begin, end: end));
   }
 
@@ -78,21 +78,21 @@ class TransformDemo4State extends State<TransformDemo4>
         ListTile(
           title: Text('focal point'),
           trailing: DropdownButton(
-            onChanged: (value) {
+            onChanged: (dynamic value) {
               setState(() {
                 focalPointAnimation =
-                    makeFocalPointAnimation(focalPointAnimation.value, value);
+                    makeFocalPointAnimation(focalPointAnimation!.value, value);
                 focalPoint = value;
                 controller.forward(from: 0.0);
               });
             },
             value: focalPoint,
-            items: items,
+            items: items as List<DropdownMenuItem<dynamic>>?,
           ),
         ),
         CheckboxListTile(
           value: shouldScale,
-          onChanged: (bool value) {
+          onChanged: (bool? value) {
             setState(() {
               shouldScale = value;
             });
@@ -101,7 +101,7 @@ class TransformDemo4State extends State<TransformDemo4>
         ),
         CheckboxListTile(
           value: shouldRotate,
-          onChanged: (bool value) {
+          onChanged: (bool? value) {
             setState(() {
               shouldRotate = value;
             });
@@ -119,9 +119,9 @@ class TransformDemo4State extends State<TransformDemo4>
                 notifier.value = m;
               },
               shouldTranslate: false,
-              shouldScale: shouldScale,
-              shouldRotate: shouldRotate,
-              focalPointAlignment: focalPoint,
+              shouldScale: shouldScale!,
+              shouldRotate: shouldRotate!,
+              focalPointAlignment: focalPoint!,
               clipChild: false,
               child: CustomPaint(
                 foregroundPainter: FocalPointPainter(focalPointAnimation),
@@ -135,7 +135,7 @@ class TransformDemo4State extends State<TransformDemo4>
         )
       ];
 
-  Widget makeTransform(BuildContext context, Widget child, Body body) {
+  Widget makeTransform(BuildContext context, Widget? child, Body body) {
     return Transform(
       transform: notifier.value,
       child: GridPaper(
@@ -150,7 +150,7 @@ class TransformDemo4State extends State<TransformDemo4>
             transitionBuilder: (child, animation) => ScaleTransition(
                   scale: animation,
                   child: child,
-                  alignment: focalPoint,
+                  alignment: focalPoint!,
                 ),
             switchInCurve: Curves.ease,
             switchOutCurve: Curves.ease,
@@ -190,9 +190,9 @@ class Body {
 }
 
 class FocalPointPainter extends CustomPainter {
-  Animation<Alignment> focalPointAnimation;
-  Path cross;
-  Paint foregroundPaint;
+  Animation<Alignment>? focalPointAnimation;
+  Path? cross;
+  late Paint foregroundPaint;
 
   FocalPointPainter(this.focalPointAnimation)
       : super(repaint: focalPointAnimation) {
@@ -209,9 +209,9 @@ class FocalPointPainter extends CustomPainter {
       initCross(size);
     }
 
-    Offset translation = focalPointAnimation.value.alongSize(size);
+    Offset translation = focalPointAnimation!.value.alongSize(size);
     canvas.translate(translation.dx, translation.dy);
-    canvas.drawPath(cross, foregroundPaint);
+    canvas.drawPath(cross!, foregroundPaint);
   }
 
   @override

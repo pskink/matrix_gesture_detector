@@ -16,7 +16,7 @@ class _TransformDemo3State extends State<TransformDemo3> {
 
   Matrix4 matrix = Matrix4.identity();
   double radius = radius0;
-  Color color = color0;
+  Color? color = color0;
   ValueNotifier<int> notifier = ValueNotifier(0);
 
   @override
@@ -73,7 +73,7 @@ class _TransformDemo3State extends State<TransformDemo3> {
                         child: Text(
                           'you can move & scale me (and "rotate" too)',
                           textAlign: TextAlign.center,
-                          style: Theme.of(ctx).textTheme.display1.apply(
+                          style: Theme.of(ctx).textTheme.display1!.apply(
                                 color: Colors.white,
                               ),
                         ),
