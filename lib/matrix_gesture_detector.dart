@@ -118,28 +118,22 @@ class _MatrixGestureDetectorState extends State<MatrixGestureDetector> {
   }
 
   _ValueUpdater<Offset> translationUpdater = _ValueUpdater(
-    onUpdate: (oldVal, newVal) {
-      if (oldVal == null || newVal == null) return null;
-      return newVal - oldVal;
-    },
-  );
-  _ValueUpdater<double> rotationUpdater = _ValueUpdater(
-    onUpdate: (oldVal, newVal) {
-      if (oldVal == null || newVal == null) return null;
-      return newVal - oldVal;
-    },
+    value: Offset.zero,
+    onUpdate: (oldVal, newVal) => newVal - oldVal,
   );
   _ValueUpdater<double> scaleUpdater = _ValueUpdater(
-    onUpdate: (oldVal, newVal) {
-      if (oldVal == null || newVal == null) return null;
-      return newVal / oldVal;
-    },
+    value: 1.0,
+    onUpdate: (oldVal, newVal) => newVal / oldVal,
+  );
+  _ValueUpdater<double> rotationUpdater = _ValueUpdater(
+    value: 0.0,
+    onUpdate: (oldVal, newVal) => newVal - oldVal,
   );
 
   void onScaleStart(ScaleStartDetails details) {
     translationUpdater.value = details.focalPoint;
-    rotationUpdater.value = double.nan;
     scaleUpdater.value = 1.0;
+    rotationUpdater.value = 0.0;
   }
 
   void onScaleUpdate(ScaleUpdateDetails details) {
@@ -149,35 +143,28 @@ class _MatrixGestureDetectorState extends State<MatrixGestureDetector> {
 
     // handle matrix translating
     if (widget.shouldTranslate) {
-      Offset translationDelta = translationUpdater.update(details.focalPoint)!;
+      Offset translationDelta = translationUpdater.update(details.focalPoint);
       translationDeltaMatrix = _translate(translationDelta);
       matrix = translationDeltaMatrix * matrix;
     }
 
-    Offset focalPoint;
-    if (widget.focalPointAlignment != null) {
-      focalPoint = widget.focalPointAlignment!.alongSize(context.size!);
-    } else {
-      RenderBox renderBox = context.findRenderObject() as RenderBox;
-      focalPoint = renderBox.globalToLocal(details.focalPoint);
-    }
+    final focalPointAlignment = widget.focalPointAlignment;
+    final focalPoint = focalPointAlignment == null ?
+      details.localFocalPoint :
+      focalPointAlignment.alongSize(context.size!);
 
     // handle matrix scaling
     if (widget.shouldScale && details.scale != 1.0) {
-      double scaleDelta = scaleUpdater.update(details.scale)!;
+      double scaleDelta = scaleUpdater.update(details.scale);
       scaleDeltaMatrix = _scale(scaleDelta, focalPoint);
       matrix = scaleDeltaMatrix * matrix;
     }
 
     // handle matrix rotating
     if (widget.shouldRotate && details.rotation != 0.0) {
-      if (rotationUpdater.value!.isNaN) {
-        rotationUpdater.value = details.rotation;
-      } else {
-        double rotationDelta = rotationUpdater.update(details.rotation)!;
-        rotationDeltaMatrix = _rotate(rotationDelta, focalPoint);
-        matrix = rotationDeltaMatrix * matrix;
-      }
+      double rotationDelta = rotationUpdater.update(details.rotation);
+      rotationDeltaMatrix = _rotate(rotationDelta, focalPoint);
+      matrix = rotationDeltaMatrix * matrix;
     }
 
     widget.onMatrixUpdate(
@@ -231,13 +218,16 @@ class _MatrixGestureDetectorState extends State<MatrixGestureDetector> {
 typedef _OnUpdate<T> = T Function(T oldValue, T newValue);
 
 class _ValueUpdater<T> {
-  final _OnUpdate<T?>? onUpdate;
-  T? value;
+  final _OnUpdate<T> onUpdate;
+  T value;
 
-  _ValueUpdater({this.onUpdate});
+  _ValueUpdater({
+    required this.value,
+    required this.onUpdate,
+  });
 
-  T? update(T newValue) {
-    T? updated = onUpdate!(value, newValue);
+  T update(T newValue) {
+    T updated = onUpdate(value, newValue);
     value = newValue;
     return updated;
   }
