@@ -1,17 +1,16 @@
 name: matrix_gesture_detector
 description: A gesture detector mapping translation/rotation/scale gestures to a Matrix4 object.
-version: 0.1.0
-author: pskink <pskink@gmail.com>
+
+version: 0.2.0-nullsafety
 homepage: https://github.com/pskink/matrix_gesture_detector
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  vector_math: ^2.0.5
-  path_drawing:
+  vector_math: ^2.1.0
 
 dev_dependencies:
   flutter_test:

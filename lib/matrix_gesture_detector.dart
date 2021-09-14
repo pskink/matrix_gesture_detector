@@ -20,7 +20,7 @@ class MatrixGestureDetector extends StatefulWidget {
   final MatrixGestureDetectorCallback onMatrixUpdate;
 
   // Callback for the end of the gesture, as in [GestureDetector]'s [onScaleEnd]
-  final Function onMatrixEnd;
+  final Function? onMatrixEnd;
 
   /// The [child] contained by this detector.
   ///
@@ -54,21 +54,19 @@ class MatrixGestureDetector extends StatefulWidget {
 
   /// When set, it will be used for computing a "fixed" focal point
   /// aligned relative to the size of this widget.
-  final Alignment focalPointAlignment;
+  final Alignment? focalPointAlignment;
 
   const MatrixGestureDetector({
-    Key key,
-    @required this.onMatrixUpdate,
+    Key? key,
+    required this.onMatrixUpdate,
+    required this.child,
     this.onMatrixEnd,
-    @required this.child,
     this.shouldTranslate = true,
     this.shouldScale = true,
     this.shouldRotate = true,
     this.clipChild = true,
     this.focalPointAlignment,
-  })  : assert(onMatrixUpdate != null),
-        assert(child != null),
-        super(key: key);
+  }) : super(key: key);
 
   @override
   MatrixGestureDetectorState createState() => MatrixGestureDetectorState();
@@ -80,12 +78,12 @@ class MatrixGestureDetector extends StatefulWidget {
   /// If [matrix] is not null the result of the composing will be concatenated
   /// to that [matrix], otherwise the identity matrix will be used.
   ///
-  static Matrix4 compose(Matrix4 matrix, Matrix4 translationMatrix, Matrix4 scaleMatrix, Matrix4 rotationMatrix) {
+  static Matrix4 compose(Matrix4? matrix, Matrix4? translationMatrix, Matrix4? scaleMatrix, Matrix4? rotationMatrix) {
     if (matrix == null) matrix = Matrix4.identity();
     if (translationMatrix != null) matrix = translationMatrix * matrix;
     if (scaleMatrix != null) matrix = scaleMatrix * matrix;
     if (rotationMatrix != null) matrix = rotationMatrix * matrix;
-    return matrix;
+    return matrix!;
   }
 
   ///
@@ -120,25 +118,26 @@ class MatrixGestureDetectorState extends State<MatrixGestureDetector> {
   }
 
   _ValueUpdater<Offset> translationUpdater = _ValueUpdater(
-    onUpdate: (oldVal, newVal) => newVal - oldVal,
-  );
-  _ValueUpdater<double> rotationUpdater = _ValueUpdater(
+    value: Offset.zero,
     onUpdate: (oldVal, newVal) => newVal - oldVal,
   );
   _ValueUpdater<double> scaleUpdater = _ValueUpdater(
+    value: 1.0,
     onUpdate: (oldVal, newVal) => newVal / oldVal,
+  );
+  _ValueUpdater<double> rotationUpdater = _ValueUpdater(
+    value: 0.0,
+    onUpdate: (oldVal, newVal) => newVal - oldVal,
   );
 
   void onScaleStart(ScaleStartDetails details) {
     translationUpdater.value = details.focalPoint;
-    rotationUpdater.value = double.nan;
     scaleUpdater.value = 1.0;
+    rotationUpdater.value = 0.0;
   }
 
   void onScaleEnd(ScaleEndDetails details) {
-    if (this.widget.onMatrixEnd != null) {
-      this.widget.onMatrixEnd();
-    }
+    this.widget.onMatrixEnd!();
   }
 
   void onScaleUpdate(ScaleUpdateDetails details) {
@@ -153,13 +152,9 @@ class MatrixGestureDetectorState extends State<MatrixGestureDetector> {
       matrix = translationDeltaMatrix * matrix;
     }
 
-    Offset focalPoint;
-    if (widget.focalPointAlignment != null) {
-      focalPoint = widget.focalPointAlignment.alongSize(context.size);
-    } else {
-      RenderBox renderBox = context.findRenderObject();
-      focalPoint = renderBox.globalToLocal(details.focalPoint);
-    }
+    final focalPointAlignment = widget.focalPointAlignment;
+    final focalPoint =
+        focalPointAlignment == null ? details.localFocalPoint : focalPointAlignment.alongSize(context.size!);
 
     // handle matrix scaling
     if (widget.shouldScale && details.scale != 1.0) {
@@ -170,13 +165,9 @@ class MatrixGestureDetectorState extends State<MatrixGestureDetector> {
 
     // handle matrix rotating
     if (widget.shouldRotate && details.rotation != 0.0) {
-      if (rotationUpdater.value.isNaN) {
-        rotationUpdater.value = details.rotation;
-      } else {
-        double rotationDelta = rotationUpdater.update(details.rotation);
-        rotationDeltaMatrix = _rotate(rotationDelta, focalPoint);
-        matrix = rotationDeltaMatrix * matrix;
-      }
+      double rotationDelta = rotationUpdater.update(details.rotation);
+      rotationDeltaMatrix = _rotate(rotationDelta, focalPoint);
+      matrix = rotationDeltaMatrix * matrix;
     }
 
     widget.onMatrixUpdate(matrix, translationDeltaMatrix, scaleDeltaMatrix, rotationDeltaMatrix);
@@ -232,7 +223,10 @@ class _ValueUpdater<T> {
   final _OnUpdate<T> onUpdate;
   T value;
 
-  _ValueUpdater({this.onUpdate});
+  _ValueUpdater({
+    required this.value,
+    required this.onUpdate,
+  });
 
   T update(T newValue) {
     T updated = onUpdate(value, newValue);
