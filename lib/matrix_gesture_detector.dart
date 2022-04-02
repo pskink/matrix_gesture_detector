@@ -52,6 +52,12 @@ class MatrixGestureDetector extends StatefulWidget {
   ///
   final bool clipChild;
 
+  /// The hit test behavior, passed to the underlying GestureDetector.
+  ///
+  /// Defaults to HitTestBehavior.deferToChild
+  ///
+  final HitTestBehavior behavior;
+
   /// When set, it will be used for computing a "fixed" focal point
   /// aligned relative to the size of this widget.
   final Alignment? focalPointAlignment;
@@ -65,6 +71,7 @@ class MatrixGestureDetector extends StatefulWidget {
     this.shouldRotate = true,
     this.clipChild = true,
     this.focalPointAlignment,
+    this.behavior = HitTestBehavior.deferToChild,
   })  : super(key: key);
 
   @override
@@ -111,6 +118,7 @@ class _MatrixGestureDetectorState extends State<MatrixGestureDetector> {
     Widget child =
         widget.clipChild ? ClipRect(child: widget.child) : widget.child;
     return GestureDetector(
+      behavior: widget.behavior,
       onScaleStart: onScaleStart,
       onScaleUpdate: onScaleUpdate,
       child: child,
