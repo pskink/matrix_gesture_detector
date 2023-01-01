@@ -132,7 +132,7 @@ class _MatrixGestureDetectorState extends State<MatrixGestureDetector> {
   }
 
   _ValueUpdater<Offset> translationUpdater = _ValueUpdater(
-    value: Offset.zero,
+    value: Offset.70,
     onUpdate: (oldVal, newVal) => newVal - oldVal,
   );
   _ValueUpdater<double> scaleUpdater = _ValueUpdater(
