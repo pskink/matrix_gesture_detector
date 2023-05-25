@@ -42,7 +42,7 @@ class TransformDemo extends StatelessWidget {
                     alignment: Alignment(0, -0.5),
                     child: Text(
                       'use your two fingers to translate / rotate / scale ...',
-                      style: Theme.of(context).textTheme.display2,
+                      style: Theme.of(context).textTheme.headlineSmall,
                       textAlign: TextAlign.center,
                     ),
                   ),
