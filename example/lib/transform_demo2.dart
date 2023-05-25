@@ -64,7 +64,7 @@ class _TransformDemo2State extends State<TransformDemo2> {
                         child: Text(
                           'you can move & scale me',
                           textAlign: TextAlign.center,
-                          style: Theme.of(ctx).textTheme.display1,
+                          style: Theme.of(ctx).textTheme.headlineMedium,
                         ),
                       ),
                     ),

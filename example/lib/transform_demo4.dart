@@ -168,7 +168,7 @@ class TransformDemo4State extends State<TransformDemo4>
                   alignment: Alignment(0, -0.5),
                   child: Text(
                     body.label,
-                    style: Theme.of(context).textTheme.display2,
+                    style: Theme.of(context).textTheme.displaySmall,
                     textAlign: TextAlign.center,
                   ),
                 ),
