@@ -36,7 +36,7 @@ class _TransformDemo3State extends State<TransformDemo3> {
             TweenSequenceItem(
                 tween: ColorTween(begin: color1, end: color2), weight: 1),
           ]);
-          Tween radiusTween = Tween<double>(begin: radius0, end: side / 2);
+          final radiusTween = Tween<double>(begin: radius0, end: side / 2);
           return MatrixGestureDetector(
             onMatrixUpdate: (m, tm, sm, rm) {
               matrix = MatrixGestureDetector.compose(matrix, tm, sm, null);
@@ -73,7 +73,7 @@ class _TransformDemo3State extends State<TransformDemo3> {
                         child: Text(
                           'you can move & scale me (and "rotate" too)',
                           textAlign: TextAlign.center,
-                          style: Theme.of(ctx).textTheme.display1!.apply(
+                          style: Theme.of(ctx).textTheme.headlineMedium!.apply(
                                 color: Colors.white,
                               ),
                         ),
